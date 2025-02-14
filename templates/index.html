@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>YouTube Video Summarizer</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>YouTube Video Summarizer</h1>
+      <p>Enter a YouTube video link to get a brief summary.</p>
+    </header>
+
+    <!-- Input field for YouTube link and button for submitting -->
+    <section class="input-section">
+      <input type="text" id="youtubeLink" placeholder="Paste YouTube link here" required>
+      <button id="summarizeButton">Summarize</button>
+    </section>
+
+    <!-- Section to display the summary output -->
+    <section class="output-section">
+      <h2>Summary:</h2>
+      <p id="summary">Your video summary will appear here.</p>  <!-- This is where the summary will appear -->
+    </section>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+      // When the summarize button is clicked
+      $('#summarizeButton').click(function(event) {
+        event.preventDefault();  // Prevent form submission
+        
+        const youtubeUrl = $('#youtubeLink').val();  // Get value from input field
+
+        if (youtubeUrl) {
+          // Send AJAX POST request to Flask
+          $.post('/', { youtubeLink: youtubeUrl }, function(response) {
+            if (response.summary) {
+              // Update the summary text in the specified section
+              $('#summary').text(response.summary);  // Set the summary text to the response
+            } else {
+              $('#summary').text('Error: No summary returned.');  // Show an error message if no summary is returned
+            }
+          }).fail(function() {
+            $('#summary').text('Error: Unable to fetch summary.');
+          });
+        } else {
+          $('#summary').text('Please provide a valid YouTube link.');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
